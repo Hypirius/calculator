@@ -1,26 +1,47 @@
+const display = document.getElementById("calculator-display");
+
 function addNumpadListeners() {
   const numpad = document.getElementById("numpad");
   numpad.addEventListener("click", function (clickObject) {
-    if (clickObject.target.classList.contains("numpad-block")) {
-      displayNumbers(clickObject);
-    } else if(clickObject.target.getAttribute("id") === "equal") {
-        
-    }
+    buttonChecker(clickObject.target);
   });
+}
+
+function buttonChecker(targetObject) {
+  if (
+    targetObject.classList.contains("numpad-block") &&
+    !(targetObject.matches("#equal") || targetObject.matches("#cancel-btn"))
+  ) {
+    displayOperation(targetObject.innerText);
+  } else if (targetObject.getAttribute("id") === "equal") {
+    calculateOperands(display.innerText);
+  } else if (targetObject.matches("#cancel-btn")) {
+    cancelDisplay();
+  }
 }
 
 addNumpadListeners();
 
-function displayNumbers(clickElement) {
-  const display = document.getElementById("calculator-display");
-  if (clickElement.target.getAttribute("id") === "cancel-btn") {
-    cancelDisplay(display);
-    console.log("Cleared display");
-    return;
-  }
-  display.append(clickElement.target.innerText);
+function displayOperation(operationText) {
+  display.append(operationText);
 }
 
-function cancelDisplay(display) {
+function cancelDisplay() {
   display.innerText = "";
+}
+
+function InterpolateSigns(operationString) {
+  if (operationString.includes("÷") || operationString.includes("x")) {
+    operationString = operationString.replaceAll("÷", "/");
+    operationString = operationString.replaceAll("x", "*");
+  }
+  return operationString;
+}
+
+function calculateOperands(displayOperators) {
+  displayOperators = InterpolateSigns(displayOperators);
+  const operation = new Function(`return ${displayOperators}`);
+  cancelDisplay();
+  displayOperation(operation());
+  console.log(operation());
 }
