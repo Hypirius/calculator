@@ -32,16 +32,24 @@ function cancelDisplay() {
 
 function InterpolateSigns(operationString) {
   if (operationString.includes("÷") || operationString.includes("x")) {
-    operationString = operationString.replaceAll("÷", "/");
-    operationString = operationString.replaceAll("x", "*");
+    operationString = operationString.replaceAll("÷", "/").replaceAll("x", "*");
   }
   return operationString;
 }
 
-function calculateOperands(displayOperators) {
-  displayOperators = InterpolateSigns(displayOperators);
-  const operation = new Function(`return ${displayOperators}`);
+function showError() {
   cancelDisplay();
-  displayOperation(operation());
-  console.log(operation());
+  displayOperation("Invalid Syntax");
+}
+
+function calculateOperands(displayOperators) {
+  try {
+    displayOperators = InterpolateSigns(displayOperators);
+    const operation = new Function(`return ${displayOperators}`);
+    cancelDisplay();
+    displayOperation(operation());
+    console.log(operation());
+  } catch {
+    showError();
+  }
 }
