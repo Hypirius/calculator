@@ -10,13 +10,20 @@ function addNumpadListeners() {
 function buttonChecker(targetObject) {
   if (
     targetObject.classList.contains("numpad-block") &&
-    !(targetObject.matches("#equal") || targetObject.matches("#cancel-btn"))
+    !(
+      targetObject.matches("#equal") ||
+      targetObject.matches("#cancel-btn") ||
+      targetObject.matches("#numpad-back")
+    )
   ) {
     displayOperation(targetObject.innerText);
   } else if (targetObject.getAttribute("id") === "equal") {
     calculateOperands(display.innerText);
   } else if (targetObject.matches("#cancel-btn")) {
     cancelDisplay();
+  } else if (targetObject.matches("#numpad-back")) {
+    console.log(display.lastChild);
+    backOperation();
   }
 }
 
@@ -24,6 +31,14 @@ addNumpadListeners();
 
 function displayOperation(operationText) {
   display.append(operationText);
+}
+
+function backOperation() {
+  try {
+    display.removeChild(display.lastChild);
+  } catch {
+    showError("No more deletion target");
+  }
 }
 
 function cancelDisplay() {
@@ -37,9 +52,9 @@ function InterpolateSigns(operationString) {
   return operationString;
 }
 
-function showError() {
+function showError(errorString) {
   cancelDisplay();
-  displayOperation("Invalid Syntax");
+  displayOperation(errorString);
 }
 
 function calculateOperands(displayOperators) {
@@ -50,6 +65,6 @@ function calculateOperands(displayOperators) {
     displayOperation(operation());
     console.log(operation());
   } catch {
-    showError();
+    showError("Invalid Syntax");
   }
 }
